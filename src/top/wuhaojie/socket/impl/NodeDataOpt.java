@@ -1,9 +1,12 @@
 package top.wuhaojie.socket.impl;
 
+import top.wuhaojie.entities.MessageEntity;
 import top.wuhaojie.utils.LogUtils;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * Author: wuhaojie
@@ -17,9 +20,15 @@ public class NodeDataOpt implements Runnable {
     private OutputStream mOutputStream;
     private InputStream mInputStream;
     private boolean canRunning = true;
+    private static Queue<MessageEntity> mMessageEntities = new LinkedBlockingDeque<>();
 
     public NodeDataOpt(Socket socket) {
         mSocket = socket;
+    }
+
+
+    public static void sendMessage(MessageEntity entity) {
+        mMessageEntities.add(entity);
     }
 
     @Override
@@ -37,9 +46,25 @@ public class NodeDataOpt implements Runnable {
 
         while (canRunning) {
             try {
-                System.out.println(reader.readLine());
+                // 读取一行数据
+                String line = reader.readLine();
+                String[] split = line.split("#");
+                int id = Integer.parseInt(split[0]);
+                String message = split[1];
+                System.out.println(message);
+
+                // 写入消息
+                if (!mMessageEntities.isEmpty()) {
+                    MessageEntity messageEntity = mMessageEntities.poll();
+                    if (id == messageEntity.getId()) {
+                        writer.write(messageEntity.getText());
+                        writer.newLine();
+                        writer.flush();
+                    }
+                }
+
             } catch (IOException e) {
-                System.out.println("读取失败");
+                LogUtils.e("读取失败");
                 canRunning = false;
             }
         }

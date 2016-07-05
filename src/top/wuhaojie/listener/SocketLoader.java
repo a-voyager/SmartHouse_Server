@@ -1,9 +1,13 @@
 package top.wuhaojie.listener;
 
+import top.wuhaojie.entities.MessageEntity;
+import top.wuhaojie.socket.impl.NodeDataOpt;
 import top.wuhaojie.socket.impl.NodeSocketThread;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Author: wuhaojie
@@ -29,6 +33,14 @@ public class SocketLoader implements ServletContextListener {
             mNodeSocketThread = new NodeSocketThread();
             mNodeSocketThread.start();
         }
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                NodeDataOpt.sendMessage(new MessageEntity(0, "control"));
+            }
+        };
+        new Timer().schedule(timerTask, 20 * 1000, 1000);
+
     }
 
     /**
