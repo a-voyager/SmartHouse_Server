@@ -8,4 +8,5 @@ package top.wuhaojie.constant;
  */
 public interface Constants {
     int DEFAULT_NODE_PORT = 5000;
+    String CONFIG_FILE_PATH = "D://smart_house_config.properties";
 }
