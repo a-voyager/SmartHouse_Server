@@ -11,7 +11,7 @@
 
     <servlet-mapping>
         <servlet-name>CurrentInfoServlet</servlet-name>
-        <url-pattern>/getInfo</url-pattern>
+        <url-pattern>/last-info.action</url-pattern>
     </servlet-mapping>
 
     <listener>
