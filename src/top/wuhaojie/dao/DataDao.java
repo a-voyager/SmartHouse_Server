@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -89,44 +90,38 @@ public class DataDao {
         }
     }
 
-//    # 创建表
-//    CREATE TABLE pointdb.POINTS
-//            (
-//    id INTEGER PRIMARY KEY AUTO_INCREMENT,
-//    latitude VARCHAR(20),
-//    longitude VARCHAR(20),
-//    height VARCHAR(10),
-//    currtime VARCHAR(30)
-//    );
-//    ALTER TABLE pointdb.POINTS COMMENT = 'store points';
 
-
-//    INSERT INTO POINTS(id, latitude, longitude, height, currtime)
-//    VALUES (0, '30.22', '104.55', '500', '2016-4-20 08:50');
-
-
-    public void insertNewPointList(List<InfoItem> itemList) throws SQLException {
+    public void insertNewInfoList(List<InfoItem> itemList) throws SQLException {
 
         long lastTime = System.currentTimeMillis();
 
-//        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO POINTS(id, latitude, longitude, height, currtime) " +
-//                "VALUES (0, ?, ?, ?, ?);");
+        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `smarthouse`.`info` " +
+                "(`id`, `nodeid`, `temperature`, `humidity`, `wind_speed`, `wind_direction`, `curtain_state`, `is_safe`, `smoke`, `ultrasonic_wave`, `time_stamp`) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
         int size = itemList.size();
         int i = 0;
         for (InfoItem p : itemList) {
 
-//            System.out.println(p.time);
-//            preparedStatement.setString(1, p.lat);
-//            preparedStatement.setString(2, p.lng);
-//            preparedStatement.setString(3, p.height);
-//            preparedStatement.setString(4, p.time);
-//            preparedStatement.execute();
+            preparedStatement.setInt(1, p.getId());
+            preparedStatement.setInt(2, p.getNodeId());
+            preparedStatement.setString(3, p.getTemperature());
+            preparedStatement.setString(4, p.getHumidity());
+            preparedStatement.setString(5, p.getWindSpeed());
+            preparedStatement.setString(6, p.getWindDirection());
+            preparedStatement.setString(7, p.getCurtainState());
+            preparedStatement.setString(8, p.getIsSafe());
+            preparedStatement.setString(9, p.getSmoke());
+            preparedStatement.setString(10, p.getUltrasonicWave());
+            preparedStatement.setString(11, p.getTimeStamp());
+
+            preparedStatement.execute();
+
             final int finalI = i;
             listeners.forEach((l) -> l.onProgress(finalI, size));
             i++;
 
         }
-//        closeStatement(preparedStatement);
+        closeStatement(preparedStatement);
 
         long deltaTime = System.currentTimeMillis() - lastTime;
         System.out.println("deltaTime" + deltaTime);
@@ -134,7 +129,7 @@ public class DataDao {
     }
 
 
-    public void deleteAllPoints() throws SQLException {
+    public void deleteAllInfo() throws SQLException {
         long lastTime = System.currentTimeMillis();
         Statement statement = connection.createStatement();
         statement.execute("DELETE FROM POINTS;");
@@ -142,17 +137,26 @@ public class DataDao {
         listeners.forEach((l) -> l.onEventCompleted(System.currentTimeMillis() - lastTime, 0));
     }
 
-    public List<InfoItem> queryAllPoints() throws SQLException {
+    public List<InfoItem> queryAllInfo() throws SQLException {
         long lastTime = System.currentTimeMillis();
-        List<InfoItem> itemList = new ArrayList<>();
+        List<InfoItem> itemList = new LinkedList<>();
         Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM POINTS;");
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM smarthouse.info;");
         while (resultSet.next()) {
-            String latitude = resultSet.getString("latitude");
-            String longitude = resultSet.getString("longitude");
-            String height = resultSet.getString("height");
-            String currtime = resultSet.getString("currtime");
-//            itemList.add(new InfoItem(latitude, longitude, height, currtime));
+
+            int id = resultSet.getInt("id");
+            int nodeId = resultSet.getInt("nodeid");
+            String temperature = resultSet.getString("temperature");
+            String humidity = resultSet.getString("humidity");
+            String windSpeed = resultSet.getString("wind_speed");
+            String windDirection = resultSet.getString("wind_direction");
+            String curtainState = resultSet.getString("curtain_state");
+            String isSafe = resultSet.getString("is_safe");
+            String smoke = resultSet.getString("smoke");
+            String ultrasonicWave = resultSet.getString("ultrasonic_wave");
+            String timeStamp = resultSet.getString("time_stamp");
+
+            itemList.add(new InfoItem(id, nodeId, temperature, humidity, windSpeed, windDirection, curtainState, isSafe, smoke, ultrasonicWave, timeStamp));
         }
         closeStatement(statement);
         listeners.forEach((l) -> l.onEventCompleted(System.currentTimeMillis() - lastTime, itemList.size()));
@@ -162,7 +166,6 @@ public class DataDao {
 
     public static void main(String[] args) {
         try {
-//            List<InfoItem> pointItems = Converter.getConverter().readXml(new File("data/test.xml"));
             DataDao.getInstance().setOnStatusChangedListener(new OnStatusChangedListener() {
                 @Override
                 public void onEventCompleted(long deltaTime, long eventMount) {
@@ -174,16 +177,16 @@ public class DataDao {
 
                 }
             });
-//            DataDao.getInstance().insertNewPointList(pointItems);
+//            DataDao.getInstance().insertNewInfoList(pointItems);
 
-            DataDao.getInstance().deleteAllPoints();
-//            List<InfoItem> itemList = DataDao.getInstance().queryAllPoints();
-//            int count = 0;
-//            for (InfoItem p : itemList) {
-//                System.out.println(p.time);
-//                count++;
-//            }
-//            System.out.println("------" + count);
+            DataDao.getInstance().deleteAllInfo();
+            List<InfoItem> itemList = DataDao.getInstance().queryAllInfo();
+            int count = 0;
+            for (InfoItem p : itemList) {
+                System.out.println(p.toString());
+                count++;
+            }
+            System.out.println("------" + count);
 
         } catch (Exception e) {
             e.printStackTrace();
