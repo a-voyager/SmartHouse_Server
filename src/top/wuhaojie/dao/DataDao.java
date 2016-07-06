@@ -180,7 +180,7 @@ public class DataDao {
         String smoke = resultSet.getString("smoke");
         String ultrasonicWave = resultSet.getString("ultrasonic_wave");
         Timestamp time_stamp = resultSet.getTimestamp("time_stamp");
-        return new InfoItem(id, nodeId, temperature, humidity, windSpeed, windDirection, curtainState, isSafe, smoke, ultrasonicWave, time_stamp);
+        return new InfoItem(id, nodeId, temperature, humidity, windSpeed, windDirection, curtainState, isSafe, smoke, ultrasonicWave, time_stamp.getTime());
     }
 
 
@@ -215,7 +215,7 @@ public class DataDao {
 //            System.out.println("------" + count);
 
 //            InfoItem infoItem = DataDao.getInstance().queryLastInfo();
-//            System.out.println(infoItem);
+//            System.out.println(new SimpleDateFormat("YYYY年MM月dd日 HH:mm:ss").format(new Date(infoItem.getTimeStamp())));
 
 
         } catch (Exception e) {
