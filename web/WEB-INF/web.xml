@@ -14,6 +14,11 @@
         <servlet-class>top.wuhaojie.servlet.RecentInfoServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>SendControlServlet</servlet-name>
+        <servlet-class>top.wuhaojie.servlet.SendControlServlet</servlet-class>
+    </servlet>
+
 
     <!--查询最后一条信息-->
     <servlet-mapping>
@@ -25,6 +30,12 @@
     <servlet-mapping>
         <servlet-name>RecentInfoServlet</servlet-name>
         <url-pattern>/recent-info.action</url-pattern>
+    </servlet-mapping>
+
+    <!--发送控制信息-->
+    <servlet-mapping>
+        <servlet-name>SendControlServlet</servlet-name>
+        <url-pattern>/send-control.action</url-pattern>
     </servlet-mapping>
 
 

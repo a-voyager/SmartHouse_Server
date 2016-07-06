@@ -53,7 +53,7 @@ public class NodeSocketThread extends Thread implements ISocketThread {
                 mThreads.add(thread);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtils.e(getClass().getSimpleName(), "接受新访客错误");
         }
 
 
