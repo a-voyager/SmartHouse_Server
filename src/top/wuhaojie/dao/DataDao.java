@@ -9,10 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Author: wuhaojie
@@ -132,7 +129,7 @@ public class DataDao {
     public void deleteAllInfo() throws SQLException {
         long lastTime = System.currentTimeMillis();
         Statement statement = connection.createStatement();
-        statement.execute("DELETE FROM POINTS;");
+        statement.execute("DELETE FROM smarthouse.info;");
         closeStatement(statement);
         listeners.forEach((l) -> l.onEventCompleted(System.currentTimeMillis() - lastTime, 0));
     }
@@ -169,7 +166,7 @@ public class DataDao {
             DataDao.getInstance().setOnStatusChangedListener(new OnStatusChangedListener() {
                 @Override
                 public void onEventCompleted(long deltaTime, long eventMount) {
-
+                    System.out.println("耗时: " + deltaTime);
                 }
 
                 @Override
@@ -177,7 +174,13 @@ public class DataDao {
 
                 }
             });
-//            DataDao.getInstance().insertNewInfoList(pointItems);
+//            LinkedList<InfoItem> infoItems = new LinkedList<>();
+//            Random random = new Random(System.currentTimeMillis());
+//            for (int i = 0; i < 5000; i++) {
+//                InfoItem infoItem = new InfoItem(0, 0, "" + random.nextInt(30), "" + random.nextInt(60), "" + System.currentTimeMillis());
+//                infoItems.add(infoItem);
+//            }
+//            DataDao.getInstance().insertNewInfoList(infoItems);
 
             DataDao.getInstance().deleteAllInfo();
             List<InfoItem> itemList = DataDao.getInstance().queryAllInfo();
