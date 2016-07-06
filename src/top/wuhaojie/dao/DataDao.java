@@ -9,7 +9,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Author: wuhaojie
@@ -93,8 +96,8 @@ public class DataDao {
         long lastTime = System.currentTimeMillis();
 
         PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `smarthouse`.`info` " +
-                "(`id`, `nodeid`, `temperature`, `humidity`, `wind_speed`, `wind_direction`, `curtain_state`, `is_safe`, `smoke`, `ultrasonic_wave`, `time_stamp`) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+                "(`id`, `nodeid`, `temperature`, `humidity`, `wind_speed`, `wind_direction`, `curtain_state`, `is_safe`, `smoke`, `ultrasonic_wave`) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
         int size = itemList.size();
         int i = 0;
         for (InfoItem p : itemList) {
@@ -109,7 +112,6 @@ public class DataDao {
             preparedStatement.setString(8, p.getIsSafe());
             preparedStatement.setString(9, p.getSmoke());
             preparedStatement.setString(10, p.getUltrasonicWave());
-            preparedStatement.setString(11, p.getTimeStamp());
 
             preparedStatement.execute();
 
@@ -134,6 +136,21 @@ public class DataDao {
         listeners.forEach((l) -> l.onEventCompleted(System.currentTimeMillis() - lastTime, 0));
     }
 
+    /**
+     * 查询最新一条记录
+     *
+     * @return
+     * @throws SQLException
+     */
+    public InfoItem queryLastInfo() throws SQLException {
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM smarthouse.info order by id desc limit 1;");
+        if (resultSet.next()) {
+            return getInfoItem(resultSet);
+        }
+        return null;
+    }
+
     public List<InfoItem> queryAllInfo() throws SQLException {
         long lastTime = System.currentTimeMillis();
         List<InfoItem> itemList = new LinkedList<>();
@@ -141,23 +158,29 @@ public class DataDao {
         ResultSet resultSet = statement.executeQuery("SELECT * FROM smarthouse.info;");
         while (resultSet.next()) {
 
-            int id = resultSet.getInt("id");
-            int nodeId = resultSet.getInt("nodeid");
-            String temperature = resultSet.getString("temperature");
-            String humidity = resultSet.getString("humidity");
-            String windSpeed = resultSet.getString("wind_speed");
-            String windDirection = resultSet.getString("wind_direction");
-            String curtainState = resultSet.getString("curtain_state");
-            String isSafe = resultSet.getString("is_safe");
-            String smoke = resultSet.getString("smoke");
-            String ultrasonicWave = resultSet.getString("ultrasonic_wave");
-            String timeStamp = resultSet.getString("time_stamp");
+            InfoItem infoItem = getInfoItem(resultSet);
 
-            itemList.add(new InfoItem(id, nodeId, temperature, humidity, windSpeed, windDirection, curtainState, isSafe, smoke, ultrasonicWave, timeStamp));
+
+            itemList.add(infoItem);
         }
         closeStatement(statement);
         listeners.forEach((l) -> l.onEventCompleted(System.currentTimeMillis() - lastTime, itemList.size()));
         return itemList;
+    }
+
+    private InfoItem getInfoItem(ResultSet resultSet) throws SQLException {
+        int id = resultSet.getInt("id");
+        int nodeId = resultSet.getInt("nodeid");
+        String temperature = resultSet.getString("temperature");
+        String humidity = resultSet.getString("humidity");
+        String windSpeed = resultSet.getString("wind_speed");
+        String windDirection = resultSet.getString("wind_direction");
+        String curtainState = resultSet.getString("curtain_state");
+        String isSafe = resultSet.getString("is_safe");
+        String smoke = resultSet.getString("smoke");
+        String ultrasonicWave = resultSet.getString("ultrasonic_wave");
+        Timestamp time_stamp = resultSet.getTimestamp("time_stamp");
+        return new InfoItem(id, nodeId, temperature, humidity, windSpeed, windDirection, curtainState, isSafe, smoke, ultrasonicWave, time_stamp);
     }
 
 
@@ -176,20 +199,24 @@ public class DataDao {
             });
 //            LinkedList<InfoItem> infoItems = new LinkedList<>();
 //            Random random = new Random(System.currentTimeMillis());
-//            for (int i = 0; i < 5000; i++) {
+//            for (int i = 0; i < 500; i++) {
 //                InfoItem infoItem = new InfoItem(0, 0, "" + random.nextInt(30), "" + random.nextInt(60), "" + System.currentTimeMillis());
 //                infoItems.add(infoItem);
 //            }
 //            DataDao.getInstance().insertNewInfoList(infoItems);
+//
+////            DataDao.getInstance().deleteAllInfo();
+//            List<InfoItem> itemList = DataDao.getInstance().queryAllInfo();
+//            int count = 0;
+//            for (InfoItem p : itemList) {
+//                System.out.println(p.toString());
+//                count++;
+//            }
+//            System.out.println("------" + count);
 
-            DataDao.getInstance().deleteAllInfo();
-            List<InfoItem> itemList = DataDao.getInstance().queryAllInfo();
-            int count = 0;
-            for (InfoItem p : itemList) {
-                System.out.println(p.toString());
-                count++;
-            }
-            System.out.println("------" + count);
+//            InfoItem infoItem = DataDao.getInstance().queryLastInfo();
+//            System.out.println(infoItem);
+
 
         } catch (Exception e) {
             e.printStackTrace();

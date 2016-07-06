@@ -1,5 +1,7 @@
 package top.wuhaojie.entities;
 
+import java.sql.Timestamp;
+
 /**
  * Author: wuhaojie
  * E-mail: w19961009@126.com
@@ -51,10 +53,10 @@ public class InfoItem {
     /**
      * 时间戳字段
      */
-    private String mTimeStamp = "";
+    private Timestamp mTimeStamp;
 
 
-    public InfoItem(int id, int nodeId, String temperature, String humidity, String timeStamp) {
+    public InfoItem(int id, int nodeId, String temperature, String humidity, Timestamp timeStamp) {
         mId = id;
         mNodeId = nodeId;
         mTemperature = temperature;
@@ -62,7 +64,7 @@ public class InfoItem {
         mTimeStamp = timeStamp;
     }
 
-    public InfoItem(int id, int nodeId, String temperature, String humidity, String curtainState, String isSafe, String smoke, String timeStamp) {
+    public InfoItem(int id, int nodeId, String temperature, String humidity, String curtainState, String isSafe, String smoke, Timestamp timeStamp) {
         mId = id;
         mNodeId = nodeId;
         mTemperature = temperature;
@@ -73,7 +75,7 @@ public class InfoItem {
         mTimeStamp = timeStamp;
     }
 
-    public InfoItem(int id, int nodeId, String temperature, String humidity, String windSpeed, String windDirection, String curtainState, String isSafe, String smoke, String ultrasonicWave, String timeStamp) {
+    public InfoItem(int id, int nodeId, String temperature, String humidity, String windSpeed, String windDirection, String curtainState, String isSafe, String smoke, String ultrasonicWave, Timestamp timeStamp) {
         mId = id;
         mNodeId = nodeId;
         mTemperature = temperature;
@@ -167,11 +169,11 @@ public class InfoItem {
         mUltrasonicWave = ultrasonicWave;
     }
 
-    public String getTimeStamp() {
+    public Timestamp getTimeStamp() {
         return mTimeStamp;
     }
 
-    public void setTimeStamp(String timeStamp) {
+    public void setTimeStamp(Timestamp timeStamp) {
         mTimeStamp = timeStamp;
     }
 

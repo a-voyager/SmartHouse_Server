@@ -4,6 +4,16 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
 
+    <servlet>
+        <servlet-name>CurrentInfoServlet</servlet-name>
+        <servlet-class>top.wuhaojie.servlet.CurrentInfoServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>CurrentInfoServlet</servlet-name>
+        <url-pattern>/getInfo</url-pattern>
+    </servlet-mapping>
+
     <listener>
         <listener-class>top.wuhaojie.listener.SocketLoader</listener-class>
     </listener>
