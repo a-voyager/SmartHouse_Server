@@ -168,6 +168,23 @@ public class DataDao {
         return itemList;
     }
 
+    public List<InfoItem> queryRecentInfo(int count, int period) throws SQLException {
+        long lastTime = System.currentTimeMillis();
+        List<InfoItem> itemList = new LinkedList<>();
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM smarthouse.info order by id desc limit " + count * period + ";");
+        int i = 0;
+        while (resultSet.next()) {
+            if ((i++) % period == 0) {
+                InfoItem infoItem = getInfoItem(resultSet);
+                itemList.add(infoItem);
+            }
+        }
+        closeStatement(statement);
+        listeners.forEach((l) -> l.onEventCompleted(System.currentTimeMillis() - lastTime, itemList.size()));
+        return itemList;
+    }
+
     private InfoItem getInfoItem(ResultSet resultSet) throws SQLException {
         int id = resultSet.getInt("id");
         int nodeId = resultSet.getInt("nodeid");
@@ -207,6 +224,7 @@ public class DataDao {
 //
 ////            DataDao.getInstance().deleteAllInfo();
 //            List<InfoItem> itemList = DataDao.getInstance().queryAllInfo();
+//            List<InfoItem> itemList = DataDao.getInstance().queryRecentInfo(50, 3);
 //            int count = 0;
 //            for (InfoItem p : itemList) {
 //                System.out.println(p.toString());

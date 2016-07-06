@@ -9,10 +9,24 @@
         <servlet-class>top.wuhaojie.servlet.CurrentInfoServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>RecentInfoServlet</servlet-name>
+        <servlet-class>top.wuhaojie.servlet.RecentInfoServlet</servlet-class>
+    </servlet>
+
+
+    <!--查询最后一条信息-->
     <servlet-mapping>
         <servlet-name>CurrentInfoServlet</servlet-name>
         <url-pattern>/last-info.action</url-pattern>
     </servlet-mapping>
+
+    <!--查询近期信息-->
+    <servlet-mapping>
+        <servlet-name>RecentInfoServlet</servlet-name>
+        <url-pattern>/recent-info.action</url-pattern>
+    </servlet-mapping>
+
 
     <listener>
         <listener-class>top.wuhaojie.listener.SocketLoader</listener-class>
