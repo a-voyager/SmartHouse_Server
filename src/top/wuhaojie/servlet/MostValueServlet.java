@@ -2,7 +2,9 @@ package top.wuhaojie.servlet;
 
 import top.wuhaojie.dao.DataDao;
 import top.wuhaojie.entities.InfoItem;
+import top.wuhaojie.entities.MostValueItem;
 import top.wuhaojie.entities.ResponseEntity;
+import top.wuhaojie.utils.GsonUtils;
 import top.wuhaojie.utils.LogUtils;
 
 import javax.servlet.ServletException;
@@ -53,9 +55,10 @@ public class MostValueServlet extends HttpServlet {
             }
         }
 
+        String jsonStr = GsonUtils.toGson(new MostValueItem(max, min));
+
         PrintWriter writer = response.getWriter();
-        writer.println(max);
-        writer.println(min);
+        writer.print(jsonStr);
         writer.flush();
         writer.close();
     }
