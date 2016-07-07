@@ -19,6 +19,11 @@
         <servlet-class>top.wuhaojie.servlet.SendControlServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>MostValueServlet</servlet-name>
+        <servlet-class>top.wuhaojie.servlet.MostValueServlet</servlet-class>
+    </servlet>
+
 
     <!--查询最后一条信息-->
     <servlet-mapping>
@@ -36,6 +41,12 @@
     <servlet-mapping>
         <servlet-name>SendControlServlet</servlet-name>
         <url-pattern>/send-control.action</url-pattern>
+    </servlet-mapping>
+
+    <!--获取某一项的最大值/最小值-->
+    <servlet-mapping>
+        <servlet-name>MostValueServlet</servlet-name>
+        <url-pattern>/most-value.action</url-pattern>
     </servlet-mapping>
 
 
