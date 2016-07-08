@@ -34,6 +34,7 @@ public class SendControlServlet extends HttpServlet {
             }
             MessageEntity messageEntity = GsonUtils.fromJson(jsonStr.toString(), MessageEntity.class);
             NodeDataOpt.sendMessage(messageEntity);
+            System.out.println("收到控制信息" + messageEntity.getText());
         } catch (IOException e) {
             response.setHeader("response", "error");
         }

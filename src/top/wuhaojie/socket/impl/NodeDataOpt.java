@@ -1,12 +1,18 @@
 package top.wuhaojie.socket.impl;
 
+import top.wuhaojie.dao.DataDao;
+import top.wuhaojie.entities.InfoItem;
 import top.wuhaojie.entities.MessageEntity;
+import top.wuhaojie.utils.GsonUtils;
 import top.wuhaojie.utils.LogUtils;
 
 import java.io.*;
 import java.net.Socket;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * Author: wuhaojie
@@ -20,7 +26,7 @@ public class NodeDataOpt implements Runnable {
     private OutputStream mOutputStream;
     private InputStream mInputStream;
     private boolean canRunning = true;
-    private static Queue<MessageEntity> mMessageEntities = new LinkedBlockingDeque<>();
+    private static Queue<MessageEntity> mMessageEntities = new ConcurrentLinkedDeque<>();
 
     public NodeDataOpt(Socket socket) {
         mSocket = socket;
@@ -28,6 +34,7 @@ public class NodeDataOpt implements Runnable {
 
 
     public static void sendMessage(MessageEntity entity) {
+//        mMessageEntities.add(entity);
         mMessageEntities.add(entity);
     }
 
@@ -48,10 +55,17 @@ public class NodeDataOpt implements Runnable {
             try {
                 // 读取一行数据
                 String line = reader.readLine();
-                String[] split = line.split("#");
-                int id = Integer.parseInt(split[0]);
-                String message = split[1];
-                System.out.println(message);
+                InfoItem item = GsonUtils.fromJson(line, InfoItem.class);
+                int id = 0;
+                if (item != null)
+                    id = item.getNodeId();
+                if (item != null)
+                    System.out.println(item.toString());
+
+                // 存入数据库
+                if (item != null) {
+                    insert2DataBase(item);
+                }
 
                 // 写入消息
                 if (!mMessageEntities.isEmpty()) {
@@ -69,5 +83,19 @@ public class NodeDataOpt implements Runnable {
             }
         }
 
+    }
+
+    private List<InfoItem> mInfoItems = new LinkedList<>();
+
+    private void insert2DataBase(InfoItem item) {
+        mInfoItems.add(item);
+        if (mInfoItems.size() >= 5) {
+            try {
+                DataDao.getInstance().insertNewInfoList(mInfoItems);
+            } catch (SQLException e) {
+                LogUtils.e("数据库写入最新" + mInfoItems.size() + "条数据有错");
+            }
+            mInfoItems.clear();
+        }
     }
 }
