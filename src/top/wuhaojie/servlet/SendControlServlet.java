@@ -1,7 +1,7 @@
 package top.wuhaojie.servlet;
 
 import top.wuhaojie.entities.MessageEntity;
-import top.wuhaojie.socket.impl.NodeDataOpt;
+import top.wuhaojie.socket.impl.SendThread;
 import top.wuhaojie.utils.GsonUtils;
 
 import javax.servlet.ServletException;
@@ -33,7 +33,8 @@ public class SendControlServlet extends HttpServlet {
                 jsonStr.append(line);
             }
             MessageEntity messageEntity = GsonUtils.fromJson(jsonStr.toString(), MessageEntity.class);
-            NodeDataOpt.sendMessage(messageEntity);
+//           NodeDataOpt.sendMessage(messageEntity);
+            SendThread.sendMessage(messageEntity);
             System.out.println("收到控制信息" + messageEntity.getText());
         } catch (IOException e) {
             response.setHeader("response", "error");

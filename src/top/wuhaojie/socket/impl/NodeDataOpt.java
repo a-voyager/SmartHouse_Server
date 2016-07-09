@@ -2,7 +2,6 @@ package top.wuhaojie.socket.impl;
 
 import top.wuhaojie.dao.DataDao;
 import top.wuhaojie.entities.InfoItem;
-import top.wuhaojie.entities.MessageEntity;
 import top.wuhaojie.utils.GsonUtils;
 import top.wuhaojie.utils.LogUtils;
 
@@ -11,8 +10,6 @@ import java.net.Socket;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * Author: wuhaojie
@@ -26,17 +23,17 @@ public class NodeDataOpt implements Runnable {
     private OutputStream mOutputStream;
     private InputStream mInputStream;
     private boolean canRunning = true;
-    private static Queue<MessageEntity> mMessageEntities = new ConcurrentLinkedDeque<>();
+//    private static Queue<MessageEntity> mMessageEntities = new ConcurrentLinkedDeque<>();
 
     public NodeDataOpt(Socket socket) {
         mSocket = socket;
     }
 
 
-    public static void sendMessage(MessageEntity entity) {
+//    public static void sendMessage(MessageEntity entity) {
+////        mMessageEntities.add(entity);
 //        mMessageEntities.add(entity);
-        mMessageEntities.add(entity);
-    }
+//    }
 
     @Override
     public void run() {
@@ -50,6 +47,8 @@ public class NodeDataOpt implements Runnable {
         BufferedReader reader = new BufferedReader(new InputStreamReader(mInputStream));
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(mOutputStream));
         LogUtils.d("连接成功");
+
+        new SendThread(writer).start();
 
         while (canRunning) {
             try {
@@ -67,15 +66,15 @@ public class NodeDataOpt implements Runnable {
                     insert2DataBase(item);
                 }
 
-                // 写入消息
-                if (!mMessageEntities.isEmpty()) {
-                    MessageEntity messageEntity = mMessageEntities.poll();
-                    if (id == messageEntity.getId()) {
-                        writer.write(messageEntity.getText());
-                        writer.newLine();
-                        writer.flush();
-                    }
-                }
+//                // 写入消息
+//                if (!mMessageEntities.isEmpty()) {
+//                    MessageEntity messageEntity = mMessageEntities.poll();
+//                    if (id == messageEntity.getId()) {
+//                        writer.write(messageEntity.getText());
+//                        writer.newLine();
+//                        writer.flush();
+//                    }
+//                }
 
             } catch (IOException e) {
                 LogUtils.e("读取失败");
